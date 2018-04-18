@@ -24,12 +24,12 @@ cams[0].query('WB')
 
 """
 
-import sys
+import sys,logging
 from pyviscam.port import Serial
 from pyviscam.camera import Camera
 
 from pyviscam import debug
-
+import hexdump
 
 class Viscam(object):
     """
@@ -47,10 +47,7 @@ class Viscam(object):
         if port:
             self.reset(port)
         else:
-            # please make a simulation in case you don't have
-            # a serial port with a visca camera available
-            if debug:
-                print("ERROR 34 - no serial port selected")
+            logging.debug("ERROR 34 - no serial port selected")
 
     def get_instances(self):
         """
@@ -68,7 +65,7 @@ class Viscam(object):
         # Give me the list of available cameras
         self.viscams = self._cmd_adress_set()
         # Clear the buffers from any packet stuck anywhere
-        self._if_clear()
+        #self._if_clear()
 
     def _send_broadcast(self, data):
         """
@@ -88,38 +85,28 @@ class Viscam(object):
 
         reply = self._send_broadcast('\x30'+chr(first)) # set address
         if isinstance(reply, type(None)):
-            if debug:
-                print("ERROR 35 - No reply from the bus")
+            logging.debug("ERROR 35 - No reply from the bus")
             sys.exit(1)
         if len(reply) != 4 or reply[-1:] != '\xff':
-            if debug:
-                print("ERROR 36 - enumerating devices")
+            logging.debug("ERROR 36 - enumerating devices %s",reply[:-1])
             sys.exit(1)
         if reply[0] != '\x88':
-            if debug:
-                print("ERROR 37 - expecting broadcast answer to an enumeration request")
+            logging.debug("ERROR 37 - expecting broadcast answer to an enumeration request")
             sys.exit(1)
         address = ord(reply[2])
 
         devices_count = address - first
         if devices_count == 0:
-            if debug:
-                print('ERROR 38 - unexpected answer : someone reply, but no Camera found')
+            logging.debug('ERROR 38 - unexpected answer : someone reply, but no Camera found')
             sys.exit(1)
         else:
-            if debug:
-                print("found %i devices on the bus" % devices_count)
+            logging.debug("found %i devices on the bus",devices_count)
             device = 1
             viscams = []
             while device <= devices_count:
                 device = device + 1
                 cam = Camera(self)
                 viscams.append(cam)
-                # Turn off digital zoom aka zoom_digital
-                cam.zoom_digital = False
-                # Turn off datascreen display
-                cam.menu_off()
-                cam.info_display = False
             return viscams
 
     def _if_clear(self):
@@ -129,10 +116,9 @@ class Viscam(object):
         # interface clear all
         reply = self._send_broadcast('\x01\x00\x01')
         if not reply[1:] == '\x01\x00\x01\xff':
-            print("ERROR 39 - when clearing interfaces on the bus!")
+            logging.error("ERROR 39 - when clearing interfaces on the bus!")
             sys.exit(1)
-        if debug:
-            print("all interfaces clear")
+        logging.debug("all interfaces clear")
         return reply
 
     def _send_packet(self, data, recipient=1):
@@ -168,13 +154,14 @@ class Viscam(object):
         header = 0b10000000 | sbits | rbits
         terminator = 0xff
         packet = chr(header)+data+chr(terminator)
+        logging.debug("Send: %s",hexdump.dump(packet))
         self.serial.mutex.acquire()
         self.serial._write_packet(packet)
         reply = self.serial.recv_packet()
+        logging.debug("Received: %s",hexdump.dump(reply))
         if reply:
             if reply[-1:] != '\xff':
-                if debug:
-                    print("received packet not terminated correctly: %s" % reply.encode('hex'))
+                logging.debug("received packet not terminated correctly: %s" ,reply.encode('hex'))
                 reply = None
             self.serial.mutex.release()
             return reply

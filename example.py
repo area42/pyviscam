@@ -20,21 +20,29 @@ print('serial port opening : ' + port)
 cams.reset(port)
 v1 = cams.get_instances()[0]
 
-print('available parameters : ')
-print('-------------------------')
-prop_list = [p for p in dir(Camera) if isinstance(getattr(Camera, p),property)]
-for prop in prop_list:
-	v1._query(prop)
+print v1.getters()
+print v1.setters()
+print v1.describe('iris')
 
+# print('available parameters : ')
+# print('-------------------------')
+# prop_list = [p for p in dir(Camera) if isinstance(getattr(Camera, p),property)]
+# print sorted(prop_list,cmp=lambda x,y: cmp(x.lower(), y.lower()))
+#v1.WB_mode = 'bla'
 
-"""
-v1.power = False
-sleep(1)
-v1.power = True
-sleep(10)
-v1.left()
-sleep(4)
-v1.stop()
-sleep(0.2)
-v1.home()
-sleep(1)"""
+v1.AE_mode = 'auto'
+# v1.iris    = 0
+# sleep(10)
+# v1.Iris	   = 40
+v1.WB_mode	   = 'table'
+v1.WB_table    = 25
+# print v1.backlight
+# v1.backlight = 'on'
+# print v1.backlight
+# v1.backlight = 'off'
+# print v1.backlight
+
+# v1.WB_mode='table'
+# print v1.WB_table
+# v1.WB_table = 25
+# print v1.WB_table

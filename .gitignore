@@ -53,3 +53,10 @@ docs/_build/
 # PyBuilder
 target/
 docs/source/_build
+
+# venv
+*.venv/*
+
+#
+*.scratch
+*.org

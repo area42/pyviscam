@@ -1,0 +1,30 @@
+CAM_ID_Inq 8x 09 04 22 ff
+Resp: 90 50 zz xx 00 yy ff
+Only zz, which identifies the camera, is relevant. zz
+= 0x50 for this camera.
+CAM_SWID_Inq 8x 09 04 23 ff Resp: y0 50 [1-125 bytes ASCII SWID] ff.
+Never route this message through Sony cameras.
+CAM_HWID_Inq 8x 09 04 24 ff The response is the Module Serial Number stored
+in EEPROM. The number is converted to ASCII : y0
+50 [12 bytes ASCII HWID] ff.
+Zoom_Pos_Inq 8x 09 04 47 ff Resp: y0 50 0p 0q 0r 0s ff
+pqrs: zoom position
+Focus_Pos_Inq 8x 09 04 48 ff Resp: y0 50 0p 0q 0r 0s ff
+pqrs: focus position
+Focus_Mode_Inq 8x 09 04 38 ff Resp: y0 50 0p ff
+p=2: Auto, p=3: Manual
+PanTilt_Pos_Inq 8x 09 06 12 ff Resp: y0 50 0p 0q 0r 0s 0t 0u 0v 0w ff
+pqrs: pan position
+tuvw: tilt position
+Power_Inq 8x 09 04 00 ff Resp: y0 50 0p ff
+p=2: On, p=3: Off
+WB_Mode_Inq 8x 09 04 35 ff Resp: y0 50 0p ff
+p=0: Auto , p=6: Table manual
+WB_Table_Inq 8x 09 04 75 ff Resp: y0 50 0p 0q 0r 0s ff
+pqrs: Table used if table mode is on.
+AE_Mode_Inq 8x 09 04 39 ff Resp: y0 50 0p ff
+p=0: Auto, p=3: Manual
+Backlight_Mode_Inq 8x 09 04 33 ff Resp: y0 50 0p ff
+p=2: On, p=3: Off, p=4: Auto
+Mirror_Inq 8x 09 04 61 ff Resp: y0 50 0p ff
+p=2: On, p=3: Off

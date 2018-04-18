@@ -18,4 +18,4 @@ Changelog:
     - First draft
 """
 
-debug = 1
+debug = 5
